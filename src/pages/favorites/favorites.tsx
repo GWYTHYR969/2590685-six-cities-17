@@ -13,7 +13,7 @@ function Favorites({offers = mockFavoriteOffers}: FavoritesProps): JSX.Element {
 
   return (
     <div className="page page--favorites-empty">
-      <Header hasNavigation/>
+      <Header />
 
       <main className={`page__main page__main--favorites ${hasOfferData ? '' : 'page__main--favorites-empty'}`}>
         {hasOfferData ?
@@ -30,7 +30,7 @@ function Favorites({offers = mockFavoriteOffers}: FavoritesProps): JSX.Element {
                     </div>
                   </div>
                   <div className="favorites__places">
-                    <CardList cards={offers} IsFavorites />
+                    <CardList cards={offers} isFavorites={false} cardType='small'/>
                   </div>
                 </li>
                 <li className="favorites__locations-items">
@@ -42,7 +42,7 @@ function Favorites({offers = mockFavoriteOffers}: FavoritesProps): JSX.Element {
                     </div>
                   </div>
                   <div className="favorites__places">
-                    <CardList cards={offers} IsFavorites />
+                    <CardList cards={offers} isFavorites={false} cardType='small' />
                   </div>
                 </li>
               </ul>

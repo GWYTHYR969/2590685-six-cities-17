@@ -27,4 +27,11 @@ const enum CardType {
   NearPlaces = 'near-places',
 }
 
-export {CITIES_NAMES, SortOptions, CardType};
+const enum LoginStatus {
+  Auth = 'AUTH',
+  NoAuth = 'NO_AUTH',
+  Unknown = 'UNKNOWN',
+}
+
+
+export {CITIES_NAMES, SortOptions, CardType, LoginStatus};
