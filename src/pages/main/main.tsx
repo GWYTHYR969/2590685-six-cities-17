@@ -1,10 +1,10 @@
-import CardList from '../../components/card-list/card-list';
 import LocationList from '../../components/location-list/location-list';
 import Header from '../../components/header/header';
 import Map from '../../components/map/map';
 import Sort from '../../components/sort/sort';
+import OfferList from '../../components/offer-list/offer-list';
 import {Offer} from '../../types';
-import {CardType} from '../../const';
+
 
 type MainProps = {
   offers: Offer[];
@@ -31,7 +31,7 @@ function Main({offers}: MainProps): JSX.Element {
                 <b className="places__found">{offers.length} places to stay in Amsterdam</b>
                 <Sort/>
                 <div className="cities__places-list places__list tabs__content">
-                  <CardList cards={offers} isFavorites={false} cardType={CardType.Cities}/>
+                  <OfferList offers={offers} />
                 </div>
               </section>
               <div className="cities__right-section">

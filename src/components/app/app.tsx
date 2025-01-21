@@ -6,7 +6,7 @@ import FavoritesPage from '../../pages/favorites/favorites';
 import NotFoundPage from '../../pages/not-found/not-found';
 import PrivateRoute from '../../routes/private-route';
 import { Offer } from '../../types';
-import { mockOffers, mockOfferDetail } from '../../mocks/offers';
+import { mockOffers } from '../../mocks/offers';
 import { RoutePath } from '../../routes/const';
 import { LoginStatus } from '../../const';
 
@@ -33,7 +33,7 @@ function App({offers = mockOffers}: AppProps): JSX.Element {
 
           }
           />
-          <Route path={RoutePath.Offer} element={<OfferPage offerDetail={mockOfferDetail}/>} />
+          <Route path={RoutePath.Offer} element={<OfferPage offers={mockOffers} authorizationStatus={userStatus} />} />
           <Route path={RoutePath.NotFound} element={<NotFoundPage />} />
         </Route>
       </Routes>

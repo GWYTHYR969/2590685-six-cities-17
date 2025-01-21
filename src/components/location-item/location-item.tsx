@@ -1,16 +1,15 @@
-import CardList from '../card-list/card-list';
-import {Offer} from '../../types';
-import { mockFavoriteOffers } from '../../mocks/offers';
-import {CardType} from '../../const';
+// import CardList from '../card-list/card-list';
+// import {Offer} from '../../types';
+// import { mockOffers } from '../../mocks/offers';
+// import {CardType} from '../../const';
 
 
 type LocationItemProps = {
   cityName: string;
   isFavorites: boolean;
-  offers?: Offer[];
 }
 
-function LocationItem({cityName, isFavorites, offers = mockFavoriteOffers}: LocationItemProps): JSX.Element {
+function LocationItem({cityName, isFavorites}: LocationItemProps): JSX.Element {
   return (
     <li className={`${isFavorites ? 'favorites__locations-items' : 'locations__item'}`}>
       {
@@ -24,7 +23,7 @@ function LocationItem({cityName, isFavorites, offers = mockFavoriteOffers}: Loca
               </div>
             </div>
             <div className="favorites__places">
-              <CardList cards={offers} isFavorites cardType={CardType.Favorites}/>
+              {/* <CardList cards={offers} isFavorites cardType={CardType.Favorites}/> */}
             </div>
           </>
           :

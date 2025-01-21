@@ -1,30 +1,45 @@
-import CardList from '../../components/card-list/card-list';
+import { useParams } from 'react-router-dom';
+
+import NotFound from '../not-found/not-found';
+import OfferList from '../../components/offer-list/offer-list';
+import OfferReviews from '../../components/offer-reviews/offer-reviews';
 import Header from '../../components/header/header';
 import Map from '../../components/map/map';
-import {OfferDetail} from '../../types';
-import { mockOfferDetail } from '../../mocks/offers';
-import { mockNearbyOffers } from '../../mocks/offers';
-import {CardType} from '../../const';
 import Gallery from '../../components/gallery/gallery';
-import Feedback from '../../components/feedback/feedback';
 
-type OfferProps = {
-  offerDetail: OfferDetail;
+import { ratingToPercent } from '../../utils';
+import { LoginStatus } from '../../const';
+import { Offer as OfferType, OfferСonvenience } from '../../types';
+
+
+type OfferPageProps = {
+  offers: OfferType[];
+  authorizationStatus: LoginStatus;
+
 }
+function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
+  const { id } = useParams();
 
-function Offer({offerDetail = mockOfferDetail}: OfferProps): JSX.Element {
+  const offer = offers.find((iteration: OfferType) => iteration.id === Number(id));
+
+  if (offer === undefined) {
+    return (<NotFound />);
+  }
+
+  const offerConveniences: OfferСonvenience[] = Array.from(offer.conveniences);
+
   return (
     <div className="page">
       <Header />
       <main className="page__main page__main--offer">
         <section className="offer">
-          <Gallery images={offerDetail.images}/>
+          <Gallery images={offer.images}/>
           <div className="offer__container container">
             <div className="offer__wrapper">
-              {offerDetail.isPremium && <div className="offer__mark"><span>Premium</span></div>}
+              {offer.isPremium && <div className="offer__mark"><span>Premium</span></div>}
               <div className="offer__name-wrapper">
-                <h1 className="offer__name">{offerDetail.title}</h1>
-                <button className="offer__bookmark-button button" type="button">
+                <h1 className="offer__name">{offer.title}</h1>
+                <button className={`offer__bookmark-button button${(offer.isMarked ? ' offer__bookmark-button--active' : '')}`} type="button">
                   <svg className="offer__bookmark-icon" width={31} height={33}>
                     <use xlinkHref="#icon-bookmark"/>
                   </svg>
@@ -33,87 +48,56 @@ function Offer({offerDetail = mockOfferDetail}: OfferProps): JSX.Element {
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">
-                  <span style={{width: '80%'}}/>
+                  <span style={{ width: `${ratingToPercent(offer.rating).toString()}%` }}></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
-                <span className="offer__rating-value rating__value">{offerDetail.rating}</span>
+                <span className="offer__rating-value rating__value">{offer.rating}</span>
               </div>
               <ul className="offer__features">
-                <li className="offer__feature offer__feature--entire">{offerDetail.type}</li>
-                <li className="offer__feature offer__feature--bedrooms">
-                  {offerDetail.bedrooms} Bedrooms
-                </li>
+                <li className="offer__feature offer__feature--entire">{offer.housingType}</li>
+                {offer.housingType === 'Apartament' ? (
+                  <li className="offer__feature offer__feature--bedrooms">
+                    {offer.roomsCount} Bedrooms
+                  </li>
+                ) : ''}
                 <li className="offer__feature offer__feature--adults">
-                  Max {offerDetail.maxAdults} adults
+                  Max {offer.maxAdult} adults
                 </li>
               </ul>
               <div className="offer__price">
                 <b className="offer__price-value">€120</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
-              <div className="offer__inside">
-                <h2 className="offer__inside-title">What is inside</h2>
-                <ul className="offer__inside-list">
-                  {offerDetail.goods.map((good) => <li className="offer__inside-item" key={good}>{good}</li>)}
-                </ul>
-              </div>
+              {offerConveniences.length > 0 ? (
+                <div className="offer__inside">
+                  <h2 className="offer__inside-title">What&apos;s inside</h2>
+                  <ul className="offer__inside-list">
+                    {Array.from(offerConveniences).map((convenience, key) => (
+                      <li className="offer__inside-item" key={key}>{convenience}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : ''}
               <div className="offer__host">
                 <h2 className="offer__host-title">Meet the host</h2>
                 <div className="offer__host-user user">
                   <div className="offer__avatar-wrapper offer__avatar-wrapper--pro user__avatar-wrapper">
                     <img
                       className="offer__avatar user__avatar"
-                      src={`${offerDetail.host.avatarUrl}`}
+                      src={`${offer.host.avatarUrl}`}
                       width={74}
                       height={74}
                       alt="Host avatar"
                     />
                   </div>
-                  <span className="offer__user-name">{offerDetail.host.name}</span>
-                  {offerDetail.host.isPro && <span className="offer__user-status">Pro</span>}
+                  <span className="offer__user-name">{offer.host.name}</span>
+                  {offer.host.isPro && <span className="offer__user-status">Pro</span>}
                 </div>
                 <div className="offer__description">
-                  <p className="offer__text">{offerDetail.description}</p>
+                  <p className="offer__text">{offer.text}</p>
                 </div>
               </div>
-              <section className="offer__reviews reviews">
-                <h2 className="reviews__title">
-                  Reviews · <span className="reviews__amount">1</span>
-                </h2>
-                <ul className="reviews__list">
-                  <li className="reviews__item">
-                    <div className="reviews__user user">
-                      <div className="reviews__avatar-wrapper user__avatar-wrapper">
-                        <img
-                          className="reviews__avatar user__avatar"
-                          src="/img/avatar-max.jpg"
-                          width={54}
-                          height={54}
-                          alt="Reviews avatar"
-                        />
-                      </div>
-                      <span className="reviews__user-name">Max</span>
-                    </div>
-                    <div className="reviews__info">
-                      <div className="reviews__rating rating">
-                        <div className="reviews__stars rating__stars">
-                          <span style={{width: '80%'}}/>
-                          <span className="visually-hidden">Rating</span>
-                        </div>
-                      </div>
-                      <p className="reviews__text">
-                        A quiet cozy and picturesque that hides behind a a river by
-                        the unique lightness of Amsterdam. The building is green and
-                        from 18th century.
-                      </p>
-                      <time className="reviews__time" dateTime="2019-04-24">
-                        April 2019
-                      </time>
-                    </div>
-                  </li>
-                </ul>
-                <Feedback/>
-              </section>
+              <OfferReviews authorizationStatus={authorizationStatus} />
             </div>
           </div>
           <Map type={'offer'}/>
@@ -124,7 +108,7 @@ function Offer({offerDetail = mockOfferDetail}: OfferProps): JSX.Element {
               Other places in the neighbourhood
             </h2>
             <div className="near-places__list places__list">
-              <CardList cards={mockNearbyOffers} isFavorites={false} cardType={CardType.NearPlaces}/>
+              <OfferList offers={offers} />
             </div>
           </section>
         </div>

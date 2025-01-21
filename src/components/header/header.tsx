@@ -1,5 +1,8 @@
 import { userMock } from '../../mocks/user';
-import { mockFavoriteOffers } from '../../mocks/offers';
+import { mockOffers } from '../../mocks/offers';
+import { Link } from 'react-router-dom';
+import { RoutePath } from '../../routes/const';
+
 
 function Header(): JSX.Element {
   const isAuthed = Object.keys(userMock).length > 0;
@@ -9,7 +12,7 @@ function Header(): JSX.Element {
       <div className="container">
         <div className="header__wrapper">
           <div className="header__left">
-            <a className="header__logo-link" href="main.html">
+            <Link className="header__logo-link" to={RoutePath.Index}>
               <img
                 className="header__logo"
                 src="/img/logo.svg"
@@ -17,7 +20,7 @@ function Header(): JSX.Element {
                 width={81}
                 height={41}
               />
-            </a>
+            </Link>
           </div>
           <nav className="header__nav">
             <ul className="header__nav-list">
@@ -28,7 +31,7 @@ function Header(): JSX.Element {
                       <div className="header__avatar-wrapper user__avatar-wrapper" style={{ backgroundImage: `url(${userMock.avatarUrl})` }}>
                       </div>
                       <span className="header__user-name user__name">{userMock.email}</span>
-                      <span className="header__favorite-count">{mockFavoriteOffers.length}</span>
+                      <span className="header__favorite-count">{mockOffers.length}</span>
                     </a>
                   </li>
                   <li className="header__nav-item">
