@@ -1,10 +1,63 @@
+import { useRef, useEffect } from 'react';
+import { Icon, Marker, layerGroup } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Circle } from 'leaflet';
+import cn from 'classnames';
+import { Offer, MapStartPosition } from '../../types';
+import { URL_MARKER_DEFAULT, URL_MARKER_ACTIVE } from '../../const';
+import useMap from '../../hooks/use-map';
+
 type MapProps = {
-  type: string;
+  startPosition: MapStartPosition;
+  offers: Offer[];
+  className: string;
+  activeOffer: Offer | null;
+  circleRadius?: number;
+};
+
+const defaultCustomIcon = new Icon({
+  iconUrl: URL_MARKER_DEFAULT,
+  iconSize: [27, 39],
+  iconAnchor: [13, 39]
+});
+
+const activeCustomIcon = new Icon({
+  iconUrl: URL_MARKER_ACTIVE,
+  iconSize: [27, 39],
+  iconAnchor: [13, 39]
+});
+
+function Map({ startPosition, offers, activeOffer, className, circleRadius = 0 }: MapProps): JSX.Element {
+  const mapRef = useRef(null);
+  const map = useMap(mapRef, startPosition);
+
+  useEffect(() => {
+    if (map) {
+      const markerLayer = layerGroup().addTo(map);
+      offers.forEach((offer) => {
+        const marker = new Marker(offer.location);
+        marker
+          .setIcon(
+            activeOffer !== null && offer.id === activeOffer.id
+              ? activeCustomIcon
+              : defaultCustomIcon
+          )
+          .addTo(markerLayer);
+      });
+
+
+      const circle = new Circle(startPosition.center, circleRadius);
+      circle.addTo(map);
+
+
+      return () => {
+        map.removeLayer(markerLayer);
+        map.removeLayer(circle);
+      };
+    }
+  }, [map, offers, activeOffer, circleRadius, startPosition.center]);
+
+  return <section className={cn('map', className)} ref={mapRef}></section>;
 }
 
-function Map({type}:MapProps): JSX.Element {
-  return(
-    <section className={`${type}__map map`} />
-  );
-}
 export default Map;

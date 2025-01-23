@@ -1,25 +1,29 @@
-import OfferCard from '../offer-card/offer-card';
 import { Offer } from '../../types';
 import { useState } from 'react';
+import { OfferListStyle } from '../../const';
+import { MapStartPosition } from '../../types';
+import OffersListMain from './offer-list-main';
+import OffersListNearby from './offer-list-nearby';
 
 type OfferListProps = {
   offers: Offer[];
+  mapStartPosition: MapStartPosition;
+  offerListStyle: OfferListStyle;
 }
 
-function OfferList({ offers }: OfferListProps): JSX.Element {
-  const [activeOfferCardId, setActiveOfferCardId] = useState<number | null>(null);
+function OfferList({ offers, mapStartPosition, offerListStyle }: OfferListProps): JSX.Element {
+  const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
+  function changeHighlightOfferCard(offer: Offer | null): void {
+    setActiveOffer(offer);
+  }
 
-  const changeHighlightOfferCard = (offerId : number | null): void => {
-    setActiveOfferCardId(offerId);
-  };
+  switch (offerListStyle) {
+    case OfferListStyle.Main:
+      return <OffersListMain offers={offers} mapStartPosition={mapStartPosition} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
+    case OfferListStyle.Nearby:
+      return <OffersListNearby offers={offers} mapStartPosition={mapStartPosition} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
+  }
 
-  return (
-    <>
-      {offers.map((offer) => (
-        <OfferCard offer={offer} key={offer.id} callback={changeHighlightOfferCard} />
-      ))}
-    </>
-  );
 }
 
 export default OfferList;

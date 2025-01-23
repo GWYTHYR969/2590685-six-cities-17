@@ -1,15 +1,15 @@
 import { useParams } from 'react-router-dom';
+import cn from 'classnames';
 
 import NotFound from '../not-found/not-found';
 import OfferList from '../../components/offer-list/offer-list';
-import OfferReviews from '../../components/offer-reviews/offer-reviews';
+import OfferReviewsList from '../../components/offer-review/offer-review-list';
 import Header from '../../components/header/header';
-import Map from '../../components/map/map';
 import Gallery from '../../components/gallery/gallery';
 
 import { ratingToPercent } from '../../utils';
-import { LoginStatus } from '../../const';
-import { Offer as OfferType, OfferСonvenience } from '../../types';
+import { LoginStatus, mapStartPosition, OfferListStyle } from '../../const';
+import { Offer as OfferType, OfferСonvenience, MapStartPosition } from '../../types';
 
 
 type OfferPageProps = {
@@ -28,6 +28,15 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
 
   const offerConveniences: OfferСonvenience[] = Array.from(offer.conveniences);
 
+
+  const offersNearby = offers.filter((iteration: OfferType) => iteration.nearbyOffersId.includes(offer.id)).slice(0, 3);
+
+  const mapPosition: MapStartPosition = {
+    center: offer.location,
+    zoom: mapStartPosition.zoom,
+  };
+
+
   return (
     <div className="page">
       <Header />
@@ -39,7 +48,7 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
               {offer.isPremium && <div className="offer__mark"><span>Premium</span></div>}
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">{offer.title}</h1>
-                <button className={`offer__bookmark-button button${(offer.isMarked ? ' offer__bookmark-button--active' : '')}`} type="button">
+                <button className={cn('offer__bookmark-button', 'button', { 'offer__bookmark-button--active': offer.isMarked })} type="button">
                   <svg className="offer__bookmark-icon" width={31} height={33}>
                     <use xlinkHref="#icon-bookmark"/>
                   </svg>
@@ -55,11 +64,7 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">{offer.housingType}</li>
-                {offer.housingType === 'Apartament' ? (
-                  <li className="offer__feature offer__feature--bedrooms">
-                    {offer.roomsCount} Bedrooms
-                  </li>
-                ) : ''}
+                {offer.housingType === 'Apartament' && <li className="offer__feature offer__feature--bedrooms">{offer.roomsCount} Bedrooms</li>}
                 <li className="offer__feature offer__feature--adults">
                   Max {offer.maxAdult} adults
                 </li>
@@ -68,7 +73,7 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
                 <b className="offer__price-value">€120</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
-              {offerConveniences.length > 0 ? (
+              {offerConveniences.length > 0 && (
                 <div className="offer__inside">
                   <h2 className="offer__inside-title">What&apos;s inside</h2>
                   <ul className="offer__inside-list">
@@ -77,7 +82,7 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
                     ))}
                   </ul>
                 </div>
-              ) : ''}
+              )}
               <div className="offer__host">
                 <h2 className="offer__host-title">Meet the host</h2>
                 <div className="offer__host-user user">
@@ -97,23 +102,13 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
                   <p className="offer__text">{offer.text}</p>
                 </div>
               </div>
-              <OfferReviews authorizationStatus={authorizationStatus} />
+              <OfferReviewsList authorizationStatus={authorizationStatus} />
             </div>
           </div>
-          <Map type={'offer'}/>
         </section>
-        <div className="container">
-          <section className="near-places places">
-            <h2 className="near-places__title">
-              Other places in the neighbourhood
-            </h2>
-            <div className="near-places__list places__list">
-              <OfferList offers={offers} />
-            </div>
-          </section>
-        </div>
-      </main>
-    </div>
+        {offersNearby.length > 0 && <OfferList offers={offersNearby} mapStartPosition={mapPosition} offerListStyle={OfferListStyle.Nearby} />}
+      </main >
+    </div >
   );
 }
 

@@ -1,10 +1,9 @@
 import LocationList from '../../components/location-list/location-list';
 import Header from '../../components/header/header';
-import Map from '../../components/map/map';
-import Sort from '../../components/sort/sort';
 import OfferList from '../../components/offer-list/offer-list';
-import {Offer} from '../../types';
-
+import { Offer } from '../../types';
+import { mapStartPosition } from '../../const';
+import { OfferListStyle } from '../../const';
 
 type MainProps = {
   offers: Offer[];
@@ -26,17 +25,7 @@ function Main({offers}: MainProps): JSX.Element {
         <div className="cities">
           {hasOfferData ?
             <div className="cities__places-container container">
-              <section className="cities__places places">
-                <h2 className="visually-hidden">Places</h2>
-                <b className="places__found">{offers.length} places to stay in Amsterdam</b>
-                <Sort/>
-                <div className="cities__places-list places__list tabs__content">
-                  <OfferList offers={offers} />
-                </div>
-              </section>
-              <div className="cities__right-section">
-                <Map type={'cities'}/>
-              </div>
+              <OfferList offers={offers} mapStartPosition={mapStartPosition} offerListStyle={OfferListStyle.Main} />
             </div>
             :
             <div className="cities__places-container cities__places-container--empty container">

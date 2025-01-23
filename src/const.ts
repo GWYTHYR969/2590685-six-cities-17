@@ -1,4 +1,4 @@
-import { SortType } from './types';
+import { SortType, MapStartPosition } from './types';
 
 const CITIES_NAMES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'] as const;
 
@@ -21,6 +21,19 @@ const SortOptions: SortType[] = [
   }
 ];
 
+const mapStartPosition: MapStartPosition = {
+  center: { lat: 52.3809553943508, lng: 4.8936781654840 },
+  zoom: 10,
+};
+
+enum OfferListStyle {
+  Main = 'MAIN',
+  Nearby = 'NEARBY',
+}
+
+const URL_MARKER_DEFAULT = '/img/pin.svg';
+const URL_MARKER_ACTIVE = '/img/pin-active.svg';
+
 const enum CardType {
   Favorites = 'favorites',
   Cities = 'cities',
@@ -34,4 +47,4 @@ const enum LoginStatus {
 }
 
 
-export {CITIES_NAMES, SortOptions, CardType, LoginStatus};
+export { CITIES_NAMES, SortOptions, CardType, LoginStatus, mapStartPosition, OfferListStyle, URL_MARKER_DEFAULT, URL_MARKER_ACTIVE };

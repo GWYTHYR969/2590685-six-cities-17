@@ -9,28 +9,28 @@ type UserData = User & {
   token: string;
 };
 
-export type HousingType = 'Apartament' | 'Room';
+type HousingType = 'Apartament' | 'Room';
 
-export type OfferHost = {
+type OfferHost = {
   name: string;
   avatarUrl: string;
   isPro: boolean;
 }
 
-export type OfferLocation = {
+type OfferLocation = {
   lat: number;
-  lon: number;
+  lng: number;
 }
 
 
-export type OfferCity = 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
+type OfferCity = 'Paris' | 'Cologne' | 'Brussels' | 'Amsterdam' | 'Hamburg' | 'Dusseldorf';
 
-export type OfferСonvenience = 'Wi-Fi' | 'Washing machine' | 'Towels' |
+type OfferСonvenience = 'Wi-Fi' | 'Washing machine' | 'Towels' |
   'Heating' | 'Coffee machine' | 'Baby seat' | 'Kitchen' | 'Dishwasher' | 'Cabel TV' | 'Fridge';
 
-export type OfferConveniences = Set<OfferСonvenience>;
+type OfferConveniences = Set<OfferСonvenience>;
 
-export type Review = {
+type Review = {
   id: number;
   text: string;
   rating: number;
@@ -52,6 +52,7 @@ type Offer = {
   conveniences: OfferConveniences;
   roomsCount: number;
   maxAdult: number;
+  nearbyOffersId: number[];
   host: OfferHost;
   text: string;
 }
@@ -61,4 +62,9 @@ type SortType = {
   value: string;
 };
 
-export type {UserData, Offer, SortType};
+type MapStartPosition = {
+  center: OfferLocation;
+  zoom: number;
+}
+
+export type { UserData, Offer, SortType, OfferCity, OfferСonvenience, OfferConveniences, Review, HousingType, MapStartPosition };

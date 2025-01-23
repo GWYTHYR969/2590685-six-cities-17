@@ -8,7 +8,7 @@ type OfferReviewSubmitProps = {
   addReviewCallback: (newReview: Review) => void;
 }
 
-function OfferReviewSubmit({ addReviewCallback }: OfferReviewSubmitProps): JSX.Element {
+function OfferReviewForm({ addReviewCallback }: OfferReviewSubmitProps): JSX.Element {
   const [newReview, setNewReview] = useState(emptyReview);
 
   const handleRatingFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,11 +57,11 @@ function OfferReviewSubmit({ addReviewCallback }: OfferReviewSubmitProps): JSX.E
     <form className="reviews__form form" action="#" method="post">
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating">
+        <StarImage rating={5} />
         <StarImage rating={1} />
         <StarImage rating={2} />
         <StarImage rating={3} />
         <StarImage rating={4} />
-        <StarImage rating={5} />
       </div>
       <textarea onChange={handleTextFieldChange} value={newReview.text} className="reviews__textarea form__textarea" id="review" name="review" placeholder="Tell how was your stay, what you like and what can be improved"></textarea>
       <div className="reviews__button-wrapper">
@@ -74,4 +74,4 @@ function OfferReviewSubmit({ addReviewCallback }: OfferReviewSubmitProps): JSX.E
   );
 }
 
-export default OfferReviewSubmit;
+export default OfferReviewForm;
