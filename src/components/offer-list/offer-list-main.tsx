@@ -1,14 +1,14 @@
-import { Offer } from '../../types';
+import { OfferPreview } from '../../types';
 import OfferCard from '../offer-card/offer-card';
 import Map from '../map/map';
-import Sort from '../sort/sort';
-import { MapStartPosition } from '../../types';
+import { Sort } from '../sort/sort';
+import { OfferLocation } from '../../types';
 
 type OfferListMainProps = {
-  offers: Offer[];
-  mapStartPosition: MapStartPosition;
-  activeOffer: Offer | null;
-  changeHighlightCallback: (activeOffer: Offer | null) => void;
+  offers: OfferPreview[];
+  mapStartPosition: OfferLocation;
+  activeOffer: OfferPreview | null;
+  changeHighlightCallback: (activeOffer: OfferPreview | null) => void;
 }
 
 

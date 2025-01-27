@@ -1,35 +1,20 @@
-import { SortType, MapStartPosition } from './types';
 
 const CITIES_NAMES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'] as const;
 
-const SortOptions: SortType[] = [
-  {
-    name: 'Popular',
-    value: 'Popular'
-  },
-  {
-    name: 'PriceToHigh',
-    value: 'Price: low to high'
-  },
-  {
-    name: 'PriceToLow',
-    value: 'Price: high to low'
-  },
-  {
-    name: 'TopRated',
-    value: 'Top rated first'
-  }
-];
-
-const mapStartPosition: MapStartPosition = {
-  center: { lat: 52.3809553943508, lng: 4.8936781654840 },
-  zoom: 10,
-};
-
+const SortBy = {
+  Popular: 'Popular',
+  PriceToHigh: 'Price: low to high',
+  PriceToLow: 'Price: high to low',
+  TopRatedList: 'Top rated first',
+} as const;
 enum OfferListStyle {
   Main = 'MAIN',
   Nearby = 'NEARBY',
 }
+
+const ОfferCities = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'] as const;
+
+const DEFAULT_CITY = ОfferCities[0];
 
 const URL_MARKER_DEFAULT = '/img/pin.svg';
 const URL_MARKER_ACTIVE = '/img/pin-active.svg';
@@ -46,5 +31,29 @@ const enum LoginStatus {
   Unknown = 'UNKNOWN',
 }
 
+enum ApiRoutes {
+  Offers = '/offers',
+  Login = '/login',
+  Logout = '/logout',
+  Comments = '/comments',
+  Favorite = '/favorite'
+}
 
-export { CITIES_NAMES, SortOptions, CardType, LoginStatus, mapStartPosition, OfferListStyle, URL_MARKER_DEFAULT, URL_MARKER_ACTIVE };
+enum NameSpace {
+  User = 'USER',
+  Offer = 'OFFER',
+}
+
+export {
+  CITIES_NAMES,
+  SortBy,
+  CardType,
+  LoginStatus,
+  OfferListStyle,
+  URL_MARKER_DEFAULT,
+  URL_MARKER_ACTIVE,
+  ApiRoutes,
+  NameSpace,
+  ОfferCities,
+  DEFAULT_CITY
+};

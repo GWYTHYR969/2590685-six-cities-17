@@ -1,13 +1,13 @@
-import { Offer } from '../../types';
+import { OfferPreview } from '../../types';
 import OfferCard from '../offer-card/offer-card';
 import Map from '../map/map';
-import { MapStartPosition } from '../../types';
+import { OfferLocation } from '../../types';
 
 type OfferListNearbyProps = {
-  offers: Offer[];
-  mapStartPosition: MapStartPosition;
-  activeOffer: Offer | null;
-  changeHighlightCallback: (activeOffer: Offer | null) => void;
+  offers: OfferPreview[];
+  mapStartPosition: OfferLocation;
+  activeOffer: OfferPreview | null;
+  changeHighlightCallback: (activeOffer: OfferPreview | null) => void;
 }
 
 
@@ -15,7 +15,7 @@ function OfferListNearby({ offers, mapStartPosition, activeOffer, changeHighligh
   return (
 
     <>
-      {offers.length > 0 && <Map circleRadius={10000} startPosition={mapStartPosition} offers={offers} activeOffer={activeOffer} className='offer__map'></Map>}
+      {offers.length > 0 && <Map startPosition={mapStartPosition} offers={offers} activeOffer={activeOffer} className='offer__map'></Map>}
       <div className="container" >
         <section className="near-places places">
           <h2 className="near-places__title">Other places in the neighbourhood</h2>

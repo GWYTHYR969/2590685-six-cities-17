@@ -1,34 +1,35 @@
-import { Review } from '../../types';
+import { Comment } from '../../types';
 import { ratingToPercent } from '../../utils';
 
 
 type OfferReviewProps = {
-  review: Review;
+  comment: Comment;
 }
 
-function OfferReview({review}: OfferReviewProps): JSX.Element {
-  const reviewTimeFormat = (date: Date): string => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+function OfferReview({ comment }: OfferReviewProps): JSX.Element {
+  const commentTimeFormat = (date: Date): string => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  const commentDate = new Date(comment.date);
 
 
   return (
     <li className="reviews__item">
       <div className="reviews__user user">
         <div className="reviews__avatar-wrapper user__avatar-wrapper">
-          <img className="reviews__avatar user__avatar" src="img/avatar-max.jpg" width="54" height="54" alt="Reviews avatar" />
+          <img className="reviews__avatar user__avatar" src={comment.user.avatarUrl} width="54" height="54" alt="Reviews avatar" />
         </div>
         <span className="reviews__user-name">
-          Max
+          {comment.user.name}
         </span>
       </div>
       <div className="reviews__info">
         <div className="reviews__rating rating">
           <div className="reviews__stars rating__stars">
-            <span style={{ width: `${ratingToPercent(review.rating)}%` }}></span>
+            <span style={{ width: `${ratingToPercent(comment.rating)}%` }}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
-        <p className="reviews__text">{review.text}</p>
-        <time className="reviews__time" dateTime={reviewTimeFormat(review.date)}>{review.date.toLocaleDateString()}</time>
+        <p className="reviews__text">{comment.comment}</p>
+        <time className="reviews__time" dateTime={commentTimeFormat(commentDate)}>{commentDate.toLocaleDateString()}</time>
       </div>
     </li>
   );

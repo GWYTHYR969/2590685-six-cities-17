@@ -1,40 +1,51 @@
 import { useParams } from 'react-router-dom';
 import cn from 'classnames';
+import { useEffect } from 'react';
 
 import NotFound from '../not-found/not-found';
 import OfferList from '../../components/offer-list/offer-list';
 import OfferReviewsList from '../../components/offer-review/offer-review-list';
 import Header from '../../components/header/header';
 import Gallery from '../../components/gallery/gallery';
+import Loader from '../../components/loader/loader';
 
+import { useAppSelector, useAppDispatch } from '../../hooks/use-app';
+import { fetchOfferNearby, fetchOfferInfo } from '../../store/offer/offer-api-actions';
+import { isError, getOffer, getNearbyOffers } from '../../store/offer/offer-selectors';
 import { ratingToPercent } from '../../utils';
-import { LoginStatus, mapStartPosition, OfferListStyle } from '../../const';
-import { Offer as OfferType, OfferСonvenience, MapStartPosition } from '../../types';
+import { OfferListStyle } from '../../const';
+import { Offer as OfferType, OfferPreview} from '../../types';
 
 
-type OfferPageProps = {
-  offers: OfferType[];
-  authorizationStatus: LoginStatus;
+function Offer(): JSX.Element {
 
-}
-function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
+  const dispatch = useAppDispatch();
   const { id } = useParams();
+  const hasError = useAppSelector(isError);
 
-  const offer = offers.find((iteration: OfferType) => iteration.id === Number(id));
+  let offer: OfferType | null | undefined = null;
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOfferInfo(id));
+    }
+  }, [dispatch, id]);
+  offer = useAppSelector(getOffer);
 
-  if (offer === undefined) {
+  let offersNearby: OfferPreview[] = [];
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOfferNearby(id));
+    }
+  }, [dispatch, id]);
+  offersNearby = useAppSelector(getNearbyOffers);
+
+  if (id === undefined) {
     return (<NotFound />);
   }
 
-  const offerConveniences: OfferСonvenience[] = Array.from(offer.conveniences);
-
-
-  const offersNearby = offers.filter((iteration: OfferType) => iteration.nearbyOffersId.includes(offer.id)).slice(0, 3);
-
-  const mapPosition: MapStartPosition = {
-    center: offer.location,
-    zoom: mapStartPosition.zoom,
-  };
+  if (!offer) {
+    return <Loader />;
+  }
 
 
   return (
@@ -48,7 +59,7 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
               {offer.isPremium && <div className="offer__mark"><span>Premium</span></div>}
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">{offer.title}</h1>
-                <button className={cn('offer__bookmark-button', 'button', { 'offer__bookmark-button--active': offer.isMarked })} type="button">
+                <button className={cn('offer__bookmark-button', 'button', { 'offer__bookmark-button--active': offer.isFavorite })} type="button">
                   <svg className="offer__bookmark-icon" width={31} height={33}>
                     <use xlinkHref="#icon-bookmark"/>
                   </svg>
@@ -63,22 +74,22 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
                 <span className="offer__rating-value rating__value">{offer.rating}</span>
               </div>
               <ul className="offer__features">
-                <li className="offer__feature offer__feature--entire">{offer.housingType}</li>
-                {offer.housingType === 'Apartament' && <li className="offer__feature offer__feature--bedrooms">{offer.roomsCount} Bedrooms</li>}
+                <li className="offer__feature offer__feature--entire">{offer.type}</li>
+                <li className="offer__feature offer__feature--bedrooms">{offer.bedrooms} {offer.bedrooms === 0 ? 'Bedroom' : 'Bedrooms'}</li>
                 <li className="offer__feature offer__feature--adults">
-                  Max {offer.maxAdult} adults
+                  Max {offer.maxAdults} adults
                 </li>
               </ul>
               <div className="offer__price">
                 <b className="offer__price-value">€120</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
-              {offerConveniences.length > 0 && (
+              {offer.goods.length > 0 && (
                 <div className="offer__inside">
                   <h2 className="offer__inside-title">What&apos;s inside</h2>
                   <ul className="offer__inside-list">
-                    {Array.from(offerConveniences).map((convenience, key) => (
-                      <li className="offer__inside-item" key={key}>{convenience}</li>
+                    {Array.from(offer.goods).map((good) => (
+                      <li className="offer__inside-item" key={Math.random()}>{good}</li>
                     ))}
                   </ul>
                 </div>
@@ -99,14 +110,14 @@ function Offer({ offers, authorizationStatus }: OfferPageProps): JSX.Element {
                   {offer.host.isPro && <span className="offer__user-status">Pro</span>}
                 </div>
                 <div className="offer__description">
-                  <p className="offer__text">{offer.text}</p>
+                  <p className="offer__text">{offer.description}</p>
                 </div>
               </div>
-              <OfferReviewsList authorizationStatus={authorizationStatus} />
+              <OfferReviewsList offerId={offer.id} />
             </div>
           </div>
         </section>
-        {offersNearby.length > 0 && <OfferList offers={offersNearby} mapStartPosition={mapPosition} offerListStyle={OfferListStyle.Nearby} />}
+        {offersNearby.length > 0 && <OfferList offers={offersNearby} offerListStyle={OfferListStyle.Nearby} />}
       </main >
     </div >
   );

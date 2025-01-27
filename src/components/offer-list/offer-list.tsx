@@ -1,27 +1,25 @@
-import { Offer } from '../../types';
+import { OfferPreview } from '../../types';
 import { useState } from 'react';
 import { OfferListStyle } from '../../const';
-import { MapStartPosition } from '../../types';
 import OffersListMain from './offer-list-main';
 import OffersListNearby from './offer-list-nearby';
 
 type OfferListProps = {
-  offers: Offer[];
-  mapStartPosition: MapStartPosition;
+  offers: OfferPreview[];
   offerListStyle: OfferListStyle;
 }
 
-function OfferList({ offers, mapStartPosition, offerListStyle }: OfferListProps): JSX.Element {
-  const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
-  function changeHighlightOfferCard(offer: Offer | null): void {
+function OfferList({ offers, offerListStyle }: OfferListProps): JSX.Element {
+  const [activeOffer, setActiveOffer] = useState<OfferPreview | null>(null);
+  function changeHighlightOfferCard(offer: OfferPreview | null): void {
     setActiveOffer(offer);
   }
 
   switch (offerListStyle) {
     case OfferListStyle.Main:
-      return <OffersListMain offers={offers} mapStartPosition={mapStartPosition} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
+      return <OffersListMain offers={offers} mapStartPosition={offers[0].city.location} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
     case OfferListStyle.Nearby:
-      return <OffersListNearby offers={offers} mapStartPosition={mapStartPosition} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
+      return <OffersListNearby offers={offers} mapStartPosition={offers[0].city.location} activeOffer={activeOffer} changeHighlightCallback={changeHighlightOfferCard} />;
   }
 
 }

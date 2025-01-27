@@ -1,26 +1,43 @@
-import { SortOptions } from '../../const';
-import {SortType} from '../../types';
+import cn from 'classnames';
+import { memo, useState } from 'react';
+import { useAppSelector, useAppDispatch } from '../../hooks/use-app';
+import { getSortingType } from '../../store/offer/offer-selectors';
+import { changeSorting } from '../../store/offer/offer-data';
+import { SortBy } from '../../const';
 
-type SortProps = {
-  sortOptions?: SortType[];
-}
+function SortComponent(): JSX.Element {
+  const [mouseHover, setMouseHover] = useState(false);
 
-function Sort({sortOptions = SortOptions}: SortProps): JSX.Element {
+  const sortBy = useAppSelector(getSortingType);
+  const dispatch = useAppDispatch();
 
   return (
     <form className="places__sorting" action="#" method="get">
-      <span className="places__sorting-caption">Sort by</span>
-      <span className="places__sorting-type" tabIndex={0}>
-        {sortOptions[0].value}
-        <svg className="places__sorting-arrow" width="{7}" height="{4}">
-          <use xlinkHref="#icon-arrow-select"/>
+      <span className="places__sorting-caption">Sort by&nbsp;</span>
+      <span className="places__sorting-type" tabIndex={0} onMouseEnter={() => setMouseHover(true)} >
+        {sortBy}
+        <svg className="places__sorting-arrow" width="7" height="4">
+          <use xlinkHref="#icon-arrow-select"></use>
         </svg>
       </span>
-      <ul className="places__options places__options--custom places__options--opened">
-        {sortOptions.map((sortItem) => <li className="places__option places__option--active" tabIndex={0} key={sortItem.name}>{sortItem.value}</li>)}
+      <ul
+        className={cn('places__options', 'places__options--custom', { 'places__options--opened': mouseHover })}
+        onMouseLeave={() => setMouseHover(false)}
+        onClick={() => setMouseHover(false)}
+      >
+        {Object.values(SortBy).map((sortItem) => (
+          <li key={sortItem}
+            className={cn('places__option', { 'places__option--active': sortBy === sortItem})}
+            tabIndex={0}
+            onClick={() => dispatch(changeSorting(sortItem))}
+          >
+            {sortItem}
+          </li>))}
       </ul>
     </form>
   );
 }
 
-export default Sort;
+const Sort = memo(SortComponent);
+
+export { Sort };

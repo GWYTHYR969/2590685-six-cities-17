@@ -1,43 +1,73 @@
-import { useState } from 'react';
-import React from 'react';
-import { Review } from '../../types';
-import { emptyReview } from '../../mocks/reviews';
+import { useState, ChangeEvent } from 'react';
+import { useAppDispatch } from '../../hooks/use-app';
+import { putOfferComment, fetchOfferComments } from '../../store/offer/offer-api-actions';
 
+const MAX_TEXT_LENGTH = 300;
+const MIN_TEXT_LENGTH = 50;
 
-type OfferReviewSubmitProps = {
-  addReviewCallback: (newReview: Review) => void;
+type InitialFormDataType = {
+  rating: number;
+  comment: string;
 }
 
-function OfferReviewForm({ addReviewCallback }: OfferReviewSubmitProps): JSX.Element {
-  const [newReview, setNewReview] = useState(emptyReview);
+const initialFormState: InitialFormDataType = {
+  rating: 0,
+  comment: ''
+};
 
-  const handleRatingFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const rating = Number(event.target.value);
-    setNewReview({ ...newReview, rating });
+type OfferReviewSubmitProps = {
+  offerId: string;
+}
+
+function OfferReviewForm({ offerId }: OfferReviewSubmitProps): JSX.Element {
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+
+  const dispatch = useAppDispatch();
+
+
+  const handleChangeComment = (evt: ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      comment: evt.target.value
+    }));
+
+    if (formData.comment.length > MIN_TEXT_LENGTH && formData.comment.length < MAX_TEXT_LENGTH) {
+      setIsSubmitDisabled(false);
+    }
   };
 
-  const handleTextFieldChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = event.target.value;
-    setNewReview({ ...newReview, text });
+  const handleChangeRating = (evt: ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      rating: Number(evt.target.value)
+    }));
   };
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    let { text, date } = newReview;
-    date = new Date();
-    text = text.replace(/\s+/g, ' ').trim();
-    addReviewCallback({ ...newReview, date, text });
-    setNewReview(emptyReview);
+  const handleFormSubmit = (evt: ChangeEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    dispatch(putOfferComment({
+      offerId,
+      text: formData.comment,
+      rating: formData.rating
+    }))
+      .then((response) => {
+        if (response.meta.requestStatus === 'fulfilled') {
+          setFormData(initialFormState);
+          dispatch(fetchOfferComments(offerId));
+        }
+      });
+    setFormData(initialFormState);
+    setIsSubmitDisabled(true);
   };
 
-  const formIsValid = (): boolean => (newReview.text.length > 50) && (newReview.rating > 0);
   const getRadionLabelId = (rating: number): string => `${rating}-star`;
 
   const StarImage = ({ rating }: { rating: number }) => (
-    <React.Fragment>
+    <>
       <input
-        onChange={handleRatingFieldChange}
-        checked={newReview.rating === rating}
+        onChange={handleChangeRating}
+        checked={formData.rating === rating}
         className="form__rating-input visually-hidden"
         name="rating" value={rating}
         id={getRadionLabelId(rating)}
@@ -48,13 +78,13 @@ function OfferReviewForm({ addReviewCallback }: OfferReviewSubmitProps): JSX.Ele
           <use xlinkHref="#icon-star"></use>
         </svg>
       </label>
-    </React.Fragment>
+    </>
 
   );
 
 
   return (
-    <form className="reviews__form form" action="#" method="post">
+    <form className="reviews__form form" onSubmit={handleFormSubmit} action="#" method="post">
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating">
         <StarImage rating={5} />
@@ -63,12 +93,12 @@ function OfferReviewForm({ addReviewCallback }: OfferReviewSubmitProps): JSX.Ele
         <StarImage rating={3} />
         <StarImage rating={4} />
       </div>
-      <textarea onChange={handleTextFieldChange} value={newReview.text} className="reviews__textarea form__textarea" id="review" name="review" placeholder="Tell how was your stay, what you like and what can be improved"></textarea>
+      <textarea onChange={handleChangeComment} value={formData.comment} className="reviews__textarea form__textarea" id="review" name="review" placeholder="Tell how was your stay, what you like and what can be improved"></textarea>
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
           To submit review please make sure to set <span className="reviews__star">rating</span> and describe your stay with at least <b className="reviews__text-amount">50 characters</b>.
         </p>
-        <button onClick={handleFormSubmit} className="reviews__submit form__submit button" type="submit" disabled={formIsValid() === false}>Submit</button>
+        <button className="reviews__submit form__submit button" type="submit" disabled={ isSubmitDisabled }>Submit</button>
       </div>
     </form>
   );

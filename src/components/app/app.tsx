@@ -1,45 +1,61 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { useEffect } from 'react';
 import MainPage from '../../pages/main/main';
 import LoginPage from '../../pages/login/login';
 import OfferPage from '../../pages/offer/offer';
 import FavoritesPage from '../../pages/favorites/favorites';
 import NotFoundPage from '../../pages/not-found/not-found';
 import PrivateRoute from '../../routes/private-route';
-import { Offer } from '../../types';
+import Loader from '../loader/loader';
+import { useAppSelector, useAppDispatch } from '../../hooks/use-app';
+import { fetchFavoriteOffers, fetchOffers } from '../../store/offer/offer-api-actions';
+import { checkLoginStatus } from '../../store/user/user-api-actions';
+import { getLoginStatus } from '../../store/user/user-selectors';
+import { getLoadingStatus } from '../../store/offer/offer-selectors';
 import { mockOffers } from '../../mocks/offers';
 import { RoutePath } from '../../routes/const';
 import { LoginStatus } from '../../const';
 
 
-type AppProps = {
-  offers?: Offer[];
-}
+function App(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(getLoadingStatus);
+  const loginStatus = useAppSelector(getLoginStatus);
 
-function App({offers = mockOffers}: AppProps): JSX.Element {
-  const userStatus = LoginStatus.Auth;
+  useEffect(() => {
+    dispatch(fetchOffers());
+    dispatch(fetchFavoriteOffers());
+    dispatch(checkLoginStatus());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path={RoutePath.Index}>
-          <Route index element={<MainPage offers={offers} />} />
-          <Route path={RoutePath.Login} element={<LoginPage />} />
-          <Route path={RoutePath.Favorites} element={
-            <PrivateRoute
-              navigatePath={RoutePath.Login}
-              isNeedNavigate={userStatus !== LoginStatus.Auth}
-            >
-              <FavoritesPage offers={mockOffers}/>
-            </PrivateRoute>
+    <HelmetProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path={RoutePath.Index}>
+            <Route index element={<MainPage />} />
+            <Route path={RoutePath.Login} element={<LoginPage />} />
+            <Route path={RoutePath.Favorites} element={
+              <PrivateRoute
+                navigatePath={RoutePath.Login}
+                isNeedNavigate={loginStatus !== LoginStatus.Auth}
+              >
+                <FavoritesPage offers={mockOffers}/>
+              </PrivateRoute>
 
-          }
-          />
-          <Route path={RoutePath.Offer} element={<OfferPage offers={mockOffers} authorizationStatus={userStatus} />} />
-          <Route path={RoutePath.NotFound} element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-
-
+            }
+            />
+            <Route path={RoutePath.Offer} element={<OfferPage />} />
+            <Route path={RoutePath.NotFound} element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

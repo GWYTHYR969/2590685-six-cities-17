@@ -1,16 +1,13 @@
 import LocationList from '../../components/location-list/location-list';
 import Header from '../../components/header/header';
 import OfferList from '../../components/offer-list/offer-list';
-import { Offer } from '../../types';
-import { mapStartPosition } from '../../const';
+import { useAppSelector } from '../../hooks/use-app';
+import { getSortedOffers } from '../../store/offer/offer-selectors';
 import { OfferListStyle } from '../../const';
 
-type MainProps = {
-  offers: Offer[];
-}
-
-function Main({offers}: MainProps): JSX.Element {
-  const hasOfferData = Object.keys(offers).length > 0;
+function Main(): JSX.Element {
+  const offersList = useAppSelector(getSortedOffers);
+  const hasOfferData = Object.keys(offersList).length > 0;
 
   return (
     <div className="page page--gray page--main">
@@ -25,7 +22,7 @@ function Main({offers}: MainProps): JSX.Element {
         <div className="cities">
           {hasOfferData ?
             <div className="cities__places-container container">
-              <OfferList offers={offers} mapStartPosition={mapStartPosition} offerListStyle={OfferListStyle.Main} />
+              <OfferList offers={offersList} offerListStyle={OfferListStyle.Main} />
             </div>
             :
             <div className="cities__places-container cities__places-container--empty container">
